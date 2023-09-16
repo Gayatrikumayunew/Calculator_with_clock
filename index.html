@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Document</title>
+
+</head>
+
+<body class="flex flex-col justify-center items-center">
+    <h2 class="text-xs">Calculator</h2>
+   
+    <div class="container w-56 mb-10 border-red-900 border-2 mt-16 bg-black text-white px-5 py-3 pb-8 rounded-2xl ">
+        <div class=" text-white head flex justify-between items-center">
+            <p id="clock" class="text-xs text-white font-bold"></p>
+            <div class="flex justify-center items-center space-x-2">
+                
+                <img src="images.png" alt="" class="h-4 bg-transparent">
+                <img src="full-battery-xxl.png" alt="" class="h-5">
+            </div>
+            
+        </div>
+        <script>
+            let time =document.getElementById("clock");
+            setInterval(()=>{
+                let d=new Date();
+                time.innerHTML=d.toLocaleTimeString();
+            },1000)
+        </script>
+    
+        <div class="screen px-1 py-2 bg-black text-white font-bold  flex justify-center items-center">
+            <input class="input h-28 w-52 text-right bg-black text-white focus:outline-none text-xl pt-20" type="text">
+        </div>
+
+        <div class="row flex justify-around space-x-2 mt-2  ">
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">7</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">8</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">9</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#B06F0B] font-bold  mt-2">*</button>
+
+        </div>
+        <div class="row flex justify-around space-x-2">
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B]  font-bold  mt-2">4</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">5</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">6</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#B06F0B] font-bold  mt-2">/</button>
+
+        </div>
+        <div class="row flex justify-around space-x-2">
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">1</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">2</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#9B9B9B] font-bold  mt-2">3</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#B06F0B]  font-bold mt-2">+</button>
+
+        </div>
+        <div class="row flex justify-around space-x-2">
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#545454] font-bold mt-2">0</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#545454] mt-2 font-bold ">C</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#545454] mt-2 font-bold ">=</button>
+            <button class="button border-2 border-black px-4 py-3 rounded-[50%] bg-[#B06F0B] mt-2 font-bold ">-</button>
+
+        </div>
+    
+    </div>
+        
+    </div>
+    
+
+     <script>
+        let string = "";
+        let buttons = document.querySelectorAll('.button');
+        let inputField = document.querySelector('input');
+
+        // Track the last input type (number or operator)
+        let lastInputType = '+-*/';
+
+        Array.from(buttons).forEach((button) => {
+            button.addEventListener('click', (e) => {
+                if (e.target.innerHTML === '=') {
+                    try {
+                        string = eval(string);
+                        if (isNaN(string) || !isFinite(string)) {
+                            throw new Error("Invalid calculation");
+                        }
+                        inputField.value = string;
+                    } catch (error) {
+                        inputField.value = "Error";
+                    }
+                } else if (e.target.innerHTML === 'C') {
+                    string = "";
+                    inputField.value = string;
+                    lastInputType = '+-*/';
+
+
+                } else {
+                    console.log(e.target);
+                    if (lastInputType === '+-*/'.includes(e.target.innerHTML)) {
+                        // Prevent consecutive operators
+                        return;
+                    }
+                    string = string + e.target.innerHTML;
+                    inputField.value = string;
+                    lastInputType = (lastInputType === '+-*/') ? 'number' : '+-*/';
+                }
+
+                // Check for consecutive invalid patterns like "//" or "++"
+                if (hasConsecutiveInvalidPattern(string)) {
+                    var errorHeading = document.createElement("h1");
+                    errorHeading.textContent = "Error: Something went wrong!";
+                    document.body.appendChild(errorHeading);
+
+
+                }
+                else if (e.target.innerHTML === 'C') {
+                    string = "";
+                    inputField.value = string;
+                    lastInputType = '+-*/';
+
+                    // Remove the error message if it exists
+                    const errorHeading = document.querySelector("h1");
+                    if (errorHeading) {
+                        document.body.removeChild(errorHeading);
+                    }
+                }
+
+            });
+        });
+
+        // Function to check for consecutive invalid patterns
+        function hasConsecutiveInvalidPattern(input) {
+            const invalidPatterns = ["//","/+","/-","/*", "+/","+-","+*","++","***", "--","-+","-*","-/","*+","*-","*/"];
+            for (const pattern of invalidPatterns) {
+                if (input.includes(pattern)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    </script> 
+    
+    
+
+</body>
+
+</html>
